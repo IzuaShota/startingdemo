@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Social App</title>   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="stylesheet" href="css/app.min.css">
+    <link rel="stylesheet" href="css/index.css">
+    
+  </head>
+
+  <body>
+    <div class="app-page" data-page="home">
+      <div class="app-topbar blue">
+        <div class="app-title"><span class="app-icon"></span>Send Email</div>
+        
+      </div>
+      <div class="app-content">
+          <div class="app-section">
+              <p class="app-section">Click below to send an email! </p> 
+            </div>
+            <div class="app-section"id="email-list" >
+                
+                  </div>
+        <div class="app-section " >
+      <div class="app-button blue" id="new-user">send to a new user</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="app-page" data-page="sendemail">
+      <div class="app-topbar green">
+        <div class="app-button left" data-back data-autotitle></div>
+        <div class="app-title">Send Email</div>
+        <div class="right app-button " data-back="home">Done</div>
+      </div>
+      <div class="app-content">
+       <input  class="app-input" >
+       <div class="app-section">
+       <form action=""	 class="app-section">
+         <div class="app-section">
+        From:  <input name="from"  class="app-input" type="email" id="sender" placeholder="From " required >
+        </div> 
+        <div class="app-section">
+         To: <input name="to"  class="app-input" type="email" id="receive" placeholder="to" required> 
+          </div>
+       </form>
+       </div>
+       <div class="app-section">
+          <form  action="" class="app-section">
+            <input name="subject" class="app-input" type="text" placeholder="subject" required>
+            <textarea name="msg"  class="app-input" placeholder="message"  required ></textarea>
+            <div class="app-button green app-submit" id="send">send</div>
+            </form>
+            </div>
+      </div>
+    </div>
+
+    <script src="js/zepto.js"></script>
+    <script src="js/app.min.js"></script>
+    <script>
+
+    
+      App.controller('home', function (page) {
+        // put stuff here
+		/*  $.ajax({
+			type:'GET',
+			http:'//localhost:8080/start/sendemail.php?callback=respons',
+			data:(name :'zepto.js'),
+			dataType:'jsonp',
+			 timeout:300,
+			 context:$('body');
+			  success:function(data){
+				 alert(data.success); 
+					  
+			  },
+				  error:function(xhr , type){
+					  alert("ajax error");
+				  }
+			  
+		  })*/
+		   if(typeof localStorage!="undefined"){
+			   //send to new user
+			   
+			   $(page).find("#new-user")
+			   .click(function(){
+				   if(localStorage.getItem("to_email") !== null){
+				  localStorage.removeItem("to_email"); 
+					   
+					   App.load("sendemail");
+				   }
+				   
+			   });
+			   
+			   //when send to an old user
+			   if(localStorage.getItem("receive") !== null){
+				   var sendto = JSON.parse(localStorage.getItem("receive"));
+				   $.each(sendto, function(index , value){
+					    
+					$(page).find("#email-list").append('<div class="app-button redirct"  >'+ value +'</div>');
+					   
+				   });
+				   
+				    $(page).find("#emal-list").show();
+				   /*when clicking an old email
+				   **append it to target list
+				   */
+				   $(page).find(".redirct")
+				   .clickable()
+				   .on("click",function(){
+//					   localStorage.setItem("to_email",$(this).html());
+					   
+					   App.load("sendemail");
+				   });
+			   }
+			   
+			   
+		   
+		  
+		  else{
+			  $(page).find("#emal-list").hide();
+		  }
+			   
+		   }
+       
+      });
+
+      App.controller('sendemail', function (page) {
+        // put stuff here
+        if(typeof localStorage!="undefined"){
+          if(localStorage.getItem("sender") !=null){
+            $(page).find("#sender").val(localStorage.getItem("sender"));
+          }
+			//if there is an old email 
+			if(localStorage.getItem("to_email") !== null){
+				
+				$(page).find("#receive").val(localStorage.getItem("to_email"));
+			}
+        }
+        //when clicking the send button
+       $(page).find("#send").on('click' , function(){
+       //sending email and local storge
+       //if local storege is working
+       if(typeof localStorage!="undefined"){
+         //array for recipient list
+         var recebientlist = new Array();
+
+        localStorage.setItem("sender",$("#sender").val());
+        if(localStorage.getItem("receive") !== null){
+         recebientlist = JSON.parse(localStorage.getItem("receive"));
+        }
+       	
+        if ($.inArray($("#receive").val(), recebientlist == -1)){
+			
+        recebientlist.push($("#receive").val());
+       // localStorage.setItem("receive",JSON.stringify(recebientlist));
+           recebientlist.sort();
+			
+        }
+       }
+       else{
+         alert("ubdate your browser");
+       }
+       
+       });
+      
+      });
+
+      try {
+        App.restore();
+      } catch (err) {
+        App.load('home');
+      }
+    </script>
+  </body>
+</html>
