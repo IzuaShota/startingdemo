@@ -1,0 +1,18 @@
+ /* TODO */
+ @-webkit-keyframes pulse{
+    0%{
+      background: #CCC;
+    }
+    25%{
+      background: #EEE;
+    }
+    50%{
+      background: #CCC;
+    }
+    75%{
+      background: #EEE;
+    }
+    100%{
+      background: #CCC;
+    }
+  }
